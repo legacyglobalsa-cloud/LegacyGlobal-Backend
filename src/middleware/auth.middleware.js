@@ -3,12 +3,17 @@ import User from "../models/user.model.js";
 
 export const protectRoute = async (req, res, next) => {
   try {
-    // Check for token in cookies first, then Authorization header
+    // Check for token in cookies first, then Authorization header, then query param
     let token = req.cookies.accessToken;
     
     // If no cookie token, check Authorization header
     if (!token && req.headers.authorization?.startsWith("Bearer ")) {
       token = req.headers.authorization.split(" ")[1];
+    }
+    
+    // If still no token, check query parameter (for document viewing in new tabs)
+    if (!token && req.query.token) {
+      token = req.query.token;
     }
 
     if (!token) {
